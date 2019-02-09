@@ -1,50 +1,55 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- * @lint-ignore-every XPLATJSCOPYRIGHT1
- */
+import React, { Component } from 'react'
+import { Platform, StyleSheet, Text, View } from 'react-native'
+import { Header, Footer } from './Components'
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+export default class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { value: null, items: [], allComplete: false }
+  }
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+  handleToggleAllComplete = () => {
+    const allComplete = !this.state.allComplete
+    const items = this.state.items.map(item => ({ ...item, allComplete }))
+    this.setState({ items, allComplete })
+  }
 
-type Props = {};
-export default class App extends Component<Props> {
+  handleAddItem = () => {
+    if (!this.state.value) return
+    const items = [
+      ...this.state.items,
+      { key: Date.now(), text: this.state.value, complete: false },
+    ]
+    this.setState({ value: null, items })
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Header
+          value={this.state.value}
+          addItem={this.handleAddItem}
+          change={value => this.setState({ value })}
+          toggleAllComplete={this.handleToggleAllComplete}
+        />
+        <View style={styles.content}>
+          <Text>Content</Text>
+        </View>
+        <Footer />
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#f5f5f5',
+    ...Platform.select({
+      ios: { paddingTop: 35 },
+    }),
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  content: {
+    flex: 1,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+})
